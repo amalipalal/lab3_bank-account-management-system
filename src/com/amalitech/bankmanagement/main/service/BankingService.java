@@ -53,6 +53,14 @@ public class BankingService {
         return transactionManager.viewTransactionsByAccount(accountNumber);
     }
 
+    public double getTotalDeposit(String accountNumber) {
+        return transactionManager.calculateTotalDeposits(accountNumber);
+    }
+
+    public double getTotalWithdrawals(String accountNumber) {
+        return transactionManager.calculateTotalWithdrawals(accountNumber);
+    }
+
     public int getAccountCount() {
         return accountManager.getAccountCount();
     }
