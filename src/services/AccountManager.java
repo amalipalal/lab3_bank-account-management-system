@@ -1,5 +1,6 @@
 package services;
 
+import config.AppConfig;
 import models.Account;
 
 import java.util.Arrays;
@@ -10,7 +11,7 @@ public class AccountManager {
     private int accountCount;
 
     public AccountManager() {
-        this.accounts = new Account[50];
+        this.accounts = new Account[AppConfig.MAX_ACCOUNTS];
         this.accountCount = 0;
     }
 

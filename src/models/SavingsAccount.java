@@ -1,10 +1,11 @@
 package models;
 
+import config.AppConfig;
 import interfaces.Transactable;
 
 public class SavingsAccount extends Account implements Transactable {
-    private final double INTEREST_RATE = 0.035;
-    private final double MINIMUM_BALANCE = 500;
+    private final double INTEREST_RATE = AppConfig.INTEREST_RATE_SAVINGS_ACCOUNT;
+    private final double MINIMUM_BALANCE = AppConfig.MINIMUM_INITIAL_DEPOSIT_SAVINGS;
 
     public SavingsAccount(Customer customer, double balance, String status) {
         super(customer, balance, status);

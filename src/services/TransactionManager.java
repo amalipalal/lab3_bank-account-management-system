@@ -1,17 +1,17 @@
 package services;
 
+import config.AppConfig;
 import models.Transaction;
 
 import java.util.Arrays;
 import java.util.Objects;
 
 public class TransactionManager {
-    private static final int MAX_TRANSACTIONS = 200;
     private final Transaction[] transactions;
     private int transactionCount;
 
     public TransactionManager() {
-        this.transactions = new Transaction[MAX_TRANSACTIONS];
+        this.transactions = new Transaction[AppConfig.MAX_TRANSACTIONS];
         this.transactionCount = 0;
     }
 

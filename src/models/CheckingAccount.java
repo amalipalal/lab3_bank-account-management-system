@@ -1,9 +1,10 @@
 package models;
 
+import config.AppConfig;
 import interfaces.Transactable;
 
 public class CheckingAccount extends Account implements Transactable {
-    private final double OVERDRAFT_LIMIT = 1000;
+    private final double OVERDRAFT_LIMIT = AppConfig.OVERDRAFT_LIMIT_CHECKING_ACCOUNT;
     private double monthlyFee;
 
     public CheckingAccount(Customer customer, double balance, String status) {
