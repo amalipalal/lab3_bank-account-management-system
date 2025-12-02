@@ -8,8 +8,11 @@ import com.amalitech.bankmanagement.main.manager.TransactionManager;
 import com.amalitech.bankmanagement.main.service.BankingService;
 import com.amalitech.bankmanagement.main.util.DataSeeder;
 import com.amalitech.bankmanagement.main.util.DisplayUtil;
+import com.amalitech.bankmanagement.main.util.ValidationUtil;
 
 import java.util.Scanner;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class TerminalApplication {
     private static final Scanner SCANNER = new Scanner(System.in);
@@ -76,13 +79,16 @@ public class TerminalApplication {
     }
 
     private static Customer createCustomerFlow() {
-        String customerName = readNonEmptyString("Enter customer name");
+        String customerName = readNonEmptyString(
+                "Enter customer name", ValidationUtil::validateName);
 
         int customerAge = readInt("Enter customer age", 1, 120);
 
-        String customerContact = readNonEmptyString("Enter customer contact");
+        String customerContact = readNonEmptyString(
+                "Enter customer contact", ValidationUtil::validatePhoneNumber);
 
-        String customerAddress = readNonEmptyString("Enter customer address");
+        String customerAddress = readNonEmptyString(
+                "Enter customer address", ValidationUtil::validateAddress);
 
         System.out.println();
         System.out.println("Customer type:");
@@ -160,16 +166,20 @@ public class TerminalApplication {
         }
     }
 
-    private static String readNonEmptyString(String prompt) {
+    private static String readNonEmptyString(String prompt, Function<String, String> validator) {
         while (true) {
             System.out.print(prompt + ": ");
             String input = SCANNER.nextLine().trim();
 
-            if(!input.isEmpty()) {
+            String errorMessage = validator.apply(input);
+
+            // The validator returns null if the input is valid
+            // so this is the case where there is no error message
+            if(errorMessage == null) {
                 return input;
             }
 
-            System.out.println("Input cannot be empty");
+            System.out.println(errorMessage);
         }
     }
 
@@ -201,7 +211,7 @@ public class TerminalApplication {
     }
 
     private static Account handleAccountValidationFlow() {
-        String accountNumber = readNonEmptyString("Enter Account Number");
+        String accountNumber = readNonEmptyString("Enter Account Number", ValidationUtil::validateAccountNumber);
 
         Account customerAccount = BANKING_SERVICE.getAccountByNumber(accountNumber);
 
@@ -271,7 +281,8 @@ public class TerminalApplication {
     public static void handleTransactionListingFlow() {
         DisplayUtil.displayHeading("View Transaction history");
 
-        String accountNumber = readNonEmptyString("Enter Account Number");
+        String accountNumber = readNonEmptyString(
+                "Enter Account Number", ValidationUtil::validateAccountNumber);
 
         Account customerAccount = BANKING_SERVICE.getAccountByNumber(accountNumber);
 
