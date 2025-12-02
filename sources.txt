@@ -12,3 +12,4 @@ src/com/amalitech/bankmanagement/main/manager/TransactionManager.java
 src/com/amalitech/bankmanagement/main/service/BankingService.java
 src/com/amalitech/bankmanagement/main/util/DataSeeder.java
 src/com/amalitech/bankmanagement/main/util/DisplayUtil.java
+src/com/amalitech/bankmanagement/main/TerminalApplication.java
