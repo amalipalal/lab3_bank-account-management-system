@@ -1,7 +1,7 @@
 src/Main.java
 src/models/Account.java
 src/models/Customer.java
-src/domain/CheckingAccount.java
+src/models/CheckingAccount.java
 src/models/SavingsAccount.java
 src/models/PremiumCustomer.java
 src/models/RegularCustomer.java
@@ -10,11 +10,14 @@ src/interfaces/Transactable.java
 src/services/AccountManager.java
 src/services/TransactionManager.java
 src/services/BankingService.java
-src/util/DataSeeder.java
-src/util/DisplayUtil.java
-src/TerminalApplication.java
+src/utils/DataSeeder.java
+src/utils/DisplayUtil.java
 src/utils/ValidationUtil.java
+src/utils/InputReader.java
+src/TerminalApplication.java
 src/config/AppConfig.java
 src/models/exceptions/InsufficientFundsException.java
 src/models/exceptions/InvalidAmountException.java
 src/models/exceptions/OverdraftExceededException.java
+src/handlers/AccountFlowHandler.java
+src/handlers/TransactionFlowHandler.java
