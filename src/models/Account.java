@@ -33,6 +33,8 @@ public abstract class Account {
 
     public abstract String displayAccountDetails();
 
+    public abstract String displayNewAccountDetails();
+
     public abstract String getAccountType();
 
     public abstract void withdraw(double amount) throws OverdraftExceededException, InsufficientFundsException;

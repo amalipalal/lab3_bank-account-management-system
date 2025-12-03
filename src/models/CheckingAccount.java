@@ -4,6 +4,7 @@ import config.AppConfig;
 import interfaces.Transactable;
 import models.exceptions.InvalidAmountException;
 import models.exceptions.OverdraftExceededException;
+import utils.DisplayUtil;
 
 public class CheckingAccount extends Account implements Transactable {
     private final double OVERDRAFT_LIMIT = AppConfig.OVERDRAFT_LIMIT_CHECKING_ACCOUNT;
@@ -16,7 +17,50 @@ public class CheckingAccount extends Account implements Transactable {
 
     @Override
     public String displayAccountDetails() {
-        return "";
+        String columnFormat = DisplayUtil.COLUMN_FORMAT_ACCOUNT_ROW;
+
+        String mainRow = getMainRowDisplay(columnFormat);
+        String extraRow = getExtraRowDisplay(columnFormat);
+
+        return mainRow + extraRow;
+    }
+
+    private String getMainRowDisplay(String columnFormat) {
+        String accountNumber = this.getAccountNumber();
+        String customerName = this.getCustomer().getName();
+        String accountType = this.getAccountType();
+        String balance = DisplayUtil.displayAmount(this.getBalance());
+        String status = DisplayUtil.formatStatus(this.getStatus());
+
+        return String.format(columnFormat,
+                accountNumber, customerName, accountType, balance, status);
+    }
+
+    private String getExtraRowDisplay(String columnFormat) {
+        String monthlyFee = DisplayUtil.displayAmount(this.monthlyFee);
+        String overdraftLimit = DisplayUtil.displayAmount(this.OVERDRAFT_LIMIT);
+
+        String overDraftDisplay = "Overdraft Limit: " + overdraftLimit;
+        String monthlyFeeDisplay = "Monthly Fee: " + monthlyFee;
+
+        return String.format(columnFormat, "", overDraftDisplay, monthlyFeeDisplay, "", "");
+    }
+
+    @Override
+    public String displayNewAccountDetails() {
+        Customer customer = getCustomer();
+        String monthlyFeeMetadata = DisplayUtil.generateMonthlyFeeMetadata(this);
+
+        return String.format(
+                DisplayUtil.NEW_CHECKING_ACCOUNT_FORMAT,
+                getAccountNumber(),
+                customer.displayCustomerDetails(),
+                getAccountType(),
+                DisplayUtil.displayAmount(getBalance()),
+                DisplayUtil.displayAmount(getOVERDRAFT_LIMIT()),
+                DisplayUtil.displayAmount(getMonthlyFee()), monthlyFeeMetadata,
+                DisplayUtil.formatStatus(getStatus())
+        );
     }
 
     @Override

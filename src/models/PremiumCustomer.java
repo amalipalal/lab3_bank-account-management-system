@@ -8,7 +8,7 @@ public class PremiumCustomer extends Customer {
 
     @Override
     public String displayCustomerDetails() {
-        return "";
+        return String.format("%s (%s)", this.getName(), this.getCustomerType());
     }
 
     @Override

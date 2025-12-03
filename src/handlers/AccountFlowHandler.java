@@ -123,11 +123,7 @@ public class AccountFlowHandler {
 
     private void showUserAccount(Account account) {
         System.out.println("Account Created successfully!");
-        if(account instanceof SavingsAccount) {
-            DisplayUtil.displayNewSavingsAccount((SavingsAccount) account);
-        } else if (account instanceof CheckingAccount) {
-            DisplayUtil.displayNewCheckingAccount((CheckingAccount) account);
-        }
+        DisplayUtil.displayNewAccount(account);
     }
 
     public void handleAccountListingFlow() {

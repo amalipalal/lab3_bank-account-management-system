@@ -13,6 +13,21 @@ import java.time.format.DateTimeFormatter;
 
 public class DisplayUtil {
     private static final int DISPLAY_STROKE_LENGTH = 110;
+    public static final String COLUMN_FORMAT_ACCOUNT_ROW = "| %-15s | %-25s | %-25s | %-15s | %-10s |%n";
+    public static final String NEW_CHECKING_ACCOUNT_FORMAT = "Account Number: %s%n" +
+            "Customer: %s%n" +
+            "Account Type: %s%n" +
+            "Initial Balance: %s%n" +
+            "Overdraft Limit: %s%n" +
+            "Monthly Fee: %s%s%n" +
+            "Status: %s%n";
+    public static final String NEW_SAVINGS_ACCOUNT_FORMAT = "Account Number: %s%n" +
+            "Customer: %s%n" +
+            "Account Type: %s%n" +
+            "Initial Balance: %s%n" +
+            "Interest Rate: %s%n" +
+            "Minimum Balance: %s%n" +
+            "Status: %s%n";
 
     public static void displayMainMenu() {
         System.out.println();
@@ -24,21 +39,8 @@ public class DisplayUtil {
         System.out.println();
     }
 
-    public static void displayNewSavingsAccount(SavingsAccount account) {
-        Customer customer = account.getCustomer();
-        float interestPercentage = (float) account.getINTEREST_RATE() * 100;
-
-        System.out.println("Account Number: " + account.getAccountNumber());
-        System.out.println("Customer: " + displayCustomerDetails(customer));
-        System.out.println("Account Type: " + account.getAccountType());
-        System.out.println("Initial Balance: " + displayAmount(account.getBalance()));
-        System.out.println("Interest Rate: " + displayDecimal(interestPercentage));
-        System.out.println("Minimum Balance: " + displayAmount(account.getMINIMUM_BALANCE()));
-        System.out.println("Status: " + formatStatus(account.getStatus()));
-    }
-
-    private static float calculateInterestPercentage(double interestRate) {
-        return (float) interestRate * 100;
+    public static void displayNewAccount(Account account) {
+        System.out.println(account.displayNewAccountDetails());
     }
 
     private static String displayCustomerDetails(Customer customer) {
@@ -49,24 +51,11 @@ public class DisplayUtil {
         return String.format("$%,.2f", amount);
     }
 
-    private static String displayDecimal(double decimal) {
+    public static String displayDecimal(double decimal) {
         return String.format("%.1f%%", decimal);
     }
 
-    public static void displayNewCheckingAccount(CheckingAccount account) {
-        Customer customer = account.getCustomer();
-        String monthlyFeeMetadata = generateMonthlyFeeMetadata(account);
-
-        System.out.println("Account Number: " + account.getAccountNumber());
-        System.out.println("Customer: " + displayCustomerDetails(customer));
-        System.out.println("Account Type: " + account.getAccountType());
-        System.out.println("Initial Balance: " + displayAmount(account.getBalance()));
-        System.out.println("Overdraft Limit: " + displayAmount(account.getOVERDRAFT_LIMIT()));
-        System.out.println("Monthly Fee: " + displayAmount(account.getMonthlyFee()) + monthlyFeeMetadata);
-        System.out.println("Status: " + formatStatus(account.getStatus()));
-    }
-
-    private static String generateMonthlyFeeMetadata (CheckingAccount account) {
+    public static String generateMonthlyFeeMetadata (CheckingAccount account) {
         Customer customer = account.getCustomer();
 
         if(account.getMonthlyFee() == 0)
@@ -75,7 +64,7 @@ public class DisplayUtil {
         return " (" + "NOT WAIVED - " + customer.getCustomerType() + " Customer )";
     }
 
-    private static String formatStatus(String status) {
+    public static String formatStatus(String status) {
         return status.substring(0, 1).toUpperCase() + status.substring(1);
     }
 
@@ -88,59 +77,14 @@ public class DisplayUtil {
     }
 
     public static void displayAccountListing(Account[] accounts) {
-        String columnFormat = "| %-15s | %-25s | %-25s | %-15s | %-10s |%n";
-
         System.out.println("-".repeat(DISPLAY_STROKE_LENGTH));
-        System.out.printf(columnFormat, "ACC NO", "CUSTOMER NAME", "TYPE", "BALANCE", "STATUS");
+        System.out.printf(COLUMN_FORMAT_ACCOUNT_ROW, "ACC NO", "CUSTOMER NAME", "TYPE", "BALANCE", "STATUS");
         System.out.println("-".repeat(DISPLAY_STROKE_LENGTH));
 
         for (Account account : accounts) {
-            if (account instanceof SavingsAccount) {
-                displaySavingsAccountRow((SavingsAccount) account, columnFormat);
-            } else if (account instanceof CheckingAccount) {
-                displayCheckingAccountRow((CheckingAccount) account, columnFormat);
-            }
-
+            System.out.print(account.displayAccountDetails());
             System.out.println("-".repeat(DISPLAY_STROKE_LENGTH));
         }
-    }
-
-    private static void displayCheckingAccountRow(CheckingAccount account, String columnFormat) {
-        String accountNumber = account.getAccountNumber();
-        String overDraftLimit = displayAmount(account.getOVERDRAFT_LIMIT());
-        String customerName = account.getCustomer().getName();
-        String accountType = account.getAccountType();
-        String monthlyFee = displayAmount(account.getMonthlyFee());
-        String balance = displayAmount(account.getBalance());
-        String status = formatStatus(account.getStatus());
-
-        System.out.printf(columnFormat, accountNumber, customerName, accountType, balance, status);
-
-        // Display additional details in the next line of the same row for overdraft and monthly fee
-        // in order to prevent the use of \n in the main row which would misalign the table
-        String overDraftDisplay = "Overdraft Limit: " + overDraftLimit;
-        String monthlyFeeDisplay = "Monthly Fee: " + monthlyFee;
-        System.out.printf(columnFormat, "", overDraftDisplay, monthlyFeeDisplay, "", "");
-    }
-
-    private static void displaySavingsAccountRow(SavingsAccount account, String columnFormat) {
-        float interestPercentage = calculateInterestPercentage(account.getINTEREST_RATE());
-
-        String accountNumber = account.getAccountNumber();
-        String interestRate = displayDecimal(interestPercentage);
-        String customerName = account.getCustomer().getName();
-        String accountType = account.getAccountType();
-        String minimumBalance = displayAmount(account.getMINIMUM_BALANCE());
-        String balance = displayAmount(account.getBalance());
-        String status = formatStatus(account.getStatus());
-
-        System.out.printf(columnFormat, accountNumber, customerName, accountType, balance, status);
-
-        // Display additional details in the next line of the same row for interest rate and min balance
-        // in order to prevent the use of \n in the main row which would misalign the table
-        String interestRateDisplay = "Interest Rate: " + interestRate;
-        String minimumBalanceDisplay = "Min Balance: " + minimumBalance;
-        System.out.printf(columnFormat, "", interestRateDisplay, minimumBalanceDisplay, "", "");
     }
 
     public static void displayTransaction(Transaction transaction) {
