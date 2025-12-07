@@ -1,12 +1,13 @@
 package models;
 
+import interfaces.Transactable;
 import models.enums.AccountType;
+import models.enums.TransactionType;
 import models.exceptions.InsufficientFundsException;
+import models.exceptions.InvalidAmountException;
 import models.exceptions.OverdraftExceededException;
 
-import java.text.DecimalFormat;
-
-public abstract class Account {
+public abstract class Account implements Transactable {
     private final String accountNumber;
     private final Customer customer;
     private double balance;
