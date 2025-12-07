@@ -6,15 +6,23 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import utils.id.TransactionIdGenerator;
 
 public class TransactionManagerTest {
 
+    @Mock
+    private TransactionIdGenerator transactionIdGenerator;
+
+    @InjectMocks
     private TransactionManager transactionManager;
 
     @BeforeEach
     void setup()
     {
-        transactionManager = new TransactionManager();
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -30,8 +38,9 @@ public class TransactionManagerTest {
     @DisplayName("Should increase transaction count on transactions")
     void testTransactionCountMultipleTransactions() {
         Transaction deposit  = new Transaction(
-                TransactionType.DEPOSIT, "ACC001", 1000, 2000);
-        Transaction withdrawal = new Transaction(TransactionType.WITHDRAWAL, "ACC001", 50, 1500);
+                "TXN001", TransactionType.DEPOSIT, "ACC001", 1000, 2000);
+        Transaction withdrawal = new Transaction(
+                "TXN002", TransactionType.WITHDRAWAL, "ACC001", 50, 1500);
 
         transactionManager.addTransaction(deposit);
         transactionManager.addTransaction(withdrawal);
@@ -64,11 +73,11 @@ public class TransactionManagerTest {
     @DisplayName("Should update total transactions after transacting")
     void testTransactionTotalAfterTransaction() {
         Transaction deposit  = new Transaction(
-                TransactionType.DEPOSIT, "ACC001", 1000, 2000);
+                "TXN001", TransactionType.DEPOSIT, "ACC001", 1000, 2000);
         Transaction withdrawal = new Transaction(
-                TransactionType.WITHDRAWAL, "ACC001", 50, 1500);
+                "TXN002", TransactionType.WITHDRAWAL, "ACC001", 50, 1500);
         Transaction secondDeposit = new Transaction(
-                TransactionType.WITHDRAWAL, "ACC002", 500, 500);
+                "TXN003", TransactionType.WITHDRAWAL, "ACC002", 500, 500);
 
         transactionManager.addTransaction(deposit);
         transactionManager.addTransaction(withdrawal);

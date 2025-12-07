@@ -23,8 +23,8 @@ public class SavingsAccountTest {
         double initialBalance = 1000;
         String accountState = "active";
 
-        regularSavings = new SavingsAccount(regularCustomer, initialBalance, accountState);
-        premiumSavings = new SavingsAccount(premiumCustomer, initialBalance, accountState);
+        regularSavings = new SavingsAccount("ACC001", regularCustomer, initialBalance, accountState);
+        premiumSavings = new SavingsAccount("ACC002", premiumCustomer, initialBalance, accountState);
     }
 
     @Test

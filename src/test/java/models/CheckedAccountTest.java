@@ -23,8 +23,8 @@ public class CheckedAccountTest {
         double initialBalance = 1000;
         String accountState = "active";
 
-        regularChecked = new CheckingAccount(regularCustomer, initialBalance, accountState);
-        premiumChecked = new CheckingAccount(premiumCustomer, initialBalance, accountState);
+        regularChecked = new CheckingAccount("ACC001", regularCustomer, initialBalance, accountState);
+        premiumChecked = new CheckingAccount("ACC002", premiumCustomer, initialBalance, accountState);
     }
 
     @Test

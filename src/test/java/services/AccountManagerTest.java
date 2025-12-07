@@ -1,23 +1,29 @@
 package services;
 
 import models.Account;
-import models.CheckingAccount;
 import models.RegularCustomer;
-import models.SavingsAccount;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import services.exceptions.AccountNotFoundException;
+import utils.id.AccountIdGenerator;
+
+import static org.mockito.Mockito.when;
 
 class AccountManagerTest {
 
+    @Mock
+    private AccountIdGenerator accountIdGenerator;
+
+    @InjectMocks
     private AccountManager accountManager;
 
     @BeforeEach
-    void setup() {
-        accountManager = new AccountManager();
-    }
+    void setup() { MockitoAnnotations.openMocks(this); }
 
     @Test
     @DisplayName("Should return 0 when no account exists")
@@ -33,8 +39,12 @@ class AccountManagerTest {
     void testGetTotalBalanceMultipleAccounts() {
         var regularCustomer = new RegularCustomer("Palal", 21, "+233599968996", "somewhere");
 
-        Account savings = new SavingsAccount(regularCustomer, 100.1, "active");
-        Account checking = new CheckingAccount(regularCustomer, 100.1, "active");
+        when(accountIdGenerator.generateId()).thenReturn("ACC001").thenReturn("ACC002");
+
+        Account savings = accountManager.createSavingsAccount(regularCustomer, 100.1);
+        Account checking = accountManager.createCheckingAccount(regularCustomer, 100.1);
+
+        when(accountIdGenerator.getCounter()).thenReturn(1).thenReturn(2);
 
         accountManager.addAccount(savings);
         accountManager.addAccount(checking);
@@ -49,8 +59,10 @@ class AccountManagerTest {
     @DisplayName("Should update total balance after deposit or withdrawal")
     void testGetTotalBalanceAfterTransaction() throws Exception{
         var regularCustomer = new RegularCustomer("Palal", 21, "+233599968996", "somewhere");
-        Account savingsAccount = new SavingsAccount(regularCustomer, 500.1, "active");
+        when(accountIdGenerator.generateId()).thenReturn("ACC001");
+        Account savingsAccount = accountManager.createSavingsAccount(regularCustomer, 500.1);
 
+        when(accountIdGenerator.getCounter()).thenReturn(1);
         accountManager.addAccount(savingsAccount);
 
         savingsAccount.deposit(500);
@@ -66,7 +78,10 @@ class AccountManagerTest {
     @DisplayName("Should return correct account when account number is valid")
     void testFindAccountFound() throws AccountNotFoundException {
         var regularCustomer = new RegularCustomer("Palal", 21, "+233599968996", "somewhere");
-        Account savingsAccount = new SavingsAccount(regularCustomer, 500.1, "active");
+        when(accountIdGenerator.generateId()).thenReturn("ACC001");
+        Account savingsAccount = accountManager.createSavingsAccount(regularCustomer, 500.1);
+
+        when(accountIdGenerator.getCounter()).thenReturn(1);
         accountManager.addAccount(savingsAccount);
 
         Account found = accountManager.findAccount(savingsAccount.getAccountNumber());
