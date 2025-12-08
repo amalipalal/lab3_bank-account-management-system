@@ -67,6 +67,7 @@ public class TransactionManager {
         return Arrays.stream(transactions)
                 .filter(Objects::nonNull)
                 .filter(transaction -> Objects.equals(transaction.getAccountNumber(), accountNumber))
+                .sorted((t1, t2) -> t2.getTimestamp().compareTo(t1.getTimestamp()))
                 .toArray(Transaction[]::new);
     }
 
