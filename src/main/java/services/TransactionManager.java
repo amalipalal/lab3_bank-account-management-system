@@ -4,7 +4,6 @@ import interfaces.AutoIdGenerator;
 import models.Account;
 import models.Transaction;
 import models.enums.TransactionType;
-import services.exceptions.TransactionLimitExceededException;
 
 import java.util.*;
 
@@ -48,10 +47,9 @@ public class TransactionManager {
      * @param transaction the transaction to store
      */
     public void addTransaction(Transaction transaction) {
-        if(this.transactionCount == transactions.length)
-            throw new TransactionLimitExceededException("Addition not allowed: maximum number of transactions have been made");
-
-        transactions[this.transactionCount] = transaction;
+        transactions
+                .computeIfAbsent(transaction.getAccountNumber(), key -> new ArrayList<>())
+                .add(transaction);
         this.transactionCount++;
     }
 
