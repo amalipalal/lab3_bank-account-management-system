@@ -1,12 +1,10 @@
 package services;
 
-import config.AppConfig;
 import interfaces.AutoIdGenerator;
 import models.Account;
 import models.CheckingAccount;
 import models.Customer;
 import models.SavingsAccount;
-import services.exceptions.AccountLimitExceededException;
 import services.exceptions.AccountNotFoundException;
 import services.exceptions.InvalidAccountNumberException;
 
