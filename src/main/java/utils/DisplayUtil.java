@@ -78,7 +78,7 @@ public class DisplayUtil {
         System.out.println("Current Balance: " + displayAmount(account.getBalance()));
     }
 
-    public static void displayAccountListing(Account[] accounts) {
+    public static void displayAccountListing(List<Account> accounts) {
         System.out.println("-".repeat(DISPLAY_STROKE_LENGTH));
         System.out.printf(COLUMN_FORMAT_ACCOUNT_ROW, "ACC NO", "CUSTOMER NAME", "TYPE", "BALANCE", "STATUS");
         System.out.println("-".repeat(DISPLAY_STROKE_LENGTH));
