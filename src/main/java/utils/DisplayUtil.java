@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class DisplayUtil {
     private static final int DISPLAY_STROKE_LENGTH = 110;
@@ -110,7 +111,7 @@ public class DisplayUtil {
         }
     }
 
-    public static void displayMultipleTransactions(Transaction[] transactions) {
+    public static void displayMultipleTransactions(List<Transaction> transactions) {
         String columnFormat = "| %-15s | %-20s | %-10s | %-15s | %-15s |%n";
 
         System.out.println("-".repeat(DISPLAY_STROKE_LENGTH));
