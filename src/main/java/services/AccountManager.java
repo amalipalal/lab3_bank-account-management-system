@@ -1,16 +1,14 @@
 package services;
 
-import config.AppConfig;
 import interfaces.AutoIdGenerator;
 import models.Account;
 import models.CheckingAccount;
 import models.Customer;
 import models.SavingsAccount;
-import services.exceptions.AccountLimitExceededException;
 import services.exceptions.AccountNotFoundException;
+import services.exceptions.InvalidAccountNumberException;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Manages account creation, storage, and lookup operations.
@@ -21,11 +19,11 @@ import java.util.Objects;
  */
 public class AccountManager {
     private final AutoIdGenerator idGenerator;
-    private final Account[] accounts;
+    private final Map<String, Account> accounts;
 
     public AccountManager(AutoIdGenerator idGenerator) {
         this.idGenerator = idGenerator;
-        this.accounts = new Account[AppConfig.MAX_ACCOUNTS];
+        this.accounts = new HashMap<>();
     }
 
     /**
@@ -58,35 +56,29 @@ public class AccountManager {
      * @param account the account to add
      */
     public void addAccount(Account account) {
-        int accountCount =  this.idGenerator.getCounter();
-
-        if(accountCount == accounts.length) {
-            throw new AccountLimitExceededException("Cannot add account: maximum number of accounts reached.");
+        if(accounts.containsKey(account.getAccountNumber())) {
+            throw new InvalidAccountNumberException("This account Id already exists");
         }
-        // accountCounter is a counter but array is appended
-        // based on zero index
-        accounts[accountCount - 1] = account;
+        accounts.put(account.getAccountNumber(), account);
     }
 
     /**
-     * Finds an account by its generated account number.
+     * Finds an account by its account number.
      *
      * @param accountNumber the account number to search for
      * @return the matching Account
-     * @throws AccountNotFoundException if the account does not exist or the index is invalid
+     * @throws AccountNotFoundException if the account does not exist
      */
     public Account findAccount(String accountNumber) throws AccountNotFoundException {
-        int accountIndex = this.idGenerator.extractIndex(accountNumber);
-        if( accountIndex < 0 || accountIndex >= accounts.length || accounts[accountIndex] == null) {
-            throw new AccountNotFoundException("Cannot find account: account doesn't exist");
+        Account account = accounts.get(accountNumber);
+        if(account == null) {
+            throw new AccountNotFoundException("Cannot find account: Account doesn't exist");
         }
-
-        return accounts[accountIndex];
+        return account;
     }
 
-    public Account[] getAllAccounts() {
-        int accountCount = this.idGenerator.getCounter();
-        return Arrays.copyOf(accounts, accountCount);
+    public List<Account> getAllAccounts() {
+        return List.copyOf(accounts.values());
     }
 
     /**
@@ -95,10 +87,10 @@ public class AccountManager {
      * @return the sum of balances of all store accounts
      */
     public double getTotalBalance() {
-        return Arrays.stream(accounts)
-                    .filter(Objects::nonNull)
-                    .mapToDouble(Account::getBalance)
-                    .sum();
+        return accounts.values()
+                .stream()
+                .mapToDouble(Account::getBalance)
+                .sum();
     }
 
     public int getAccountCount() {
