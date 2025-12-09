@@ -108,7 +108,7 @@ public class BankingService {
         return newAccount;
     }
 
-    public Account[] viewAllAccounts() {
+    public List<Account> viewAllAccounts() {
         return accountManager.getAllAccounts();
     }
 
