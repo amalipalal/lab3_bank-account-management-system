@@ -11,6 +11,8 @@ import models.exceptions.InsufficientFundsException;
 import models.exceptions.OverdraftExceededException;
 import services.exceptions.AccountNotFoundException;
 
+import java.util.List;
+
 public class BankingService {
     private final AccountManager accountManager;
     private final TransactionManager transactionManager;
@@ -110,7 +112,7 @@ public class BankingService {
         return accountManager.getAllAccounts();
     }
 
-    public Transaction[] getTransactionsByAccount(String accountNumber) {
+    public List<Transaction> getTransactionsByAccount(String accountNumber) {
         return transactionManager.viewTransactionsByAccount(accountNumber);
     }
 
