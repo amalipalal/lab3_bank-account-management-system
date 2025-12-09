@@ -1,11 +1,14 @@
 package services;
 
+import config.AppConfig;
 import interfaces.AutoIdGenerator;
 import models.Account;
 import models.Transaction;
 import models.enums.TransactionType;
+import services.exceptions.TransactionLimitExceededException;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Handles creation, storage, and querying of transactions within the system.
@@ -13,14 +16,14 @@ import java.util.*;
  */
 public class TransactionManager {
     private final AutoIdGenerator idGenerator;
-    private final Map<String, List<Transaction>> transactions;
+    private final Transaction[] transactions;
     // keeps track of successful transactions since unsuccessful
     // transactions still increase idGenerator transaction count
     private int transactionCount;
 
     public TransactionManager(AutoIdGenerator idGenerator) {
         this.idGenerator = idGenerator;
-        this.transactions = new HashMap<>();
+        this.transactions = new Transaction[AppConfig.MAX_TRANSACTIONS];
         this.transactionCount = 0;
     }
 
@@ -47,9 +50,10 @@ public class TransactionManager {
      * @param transaction the transaction to store
      */
     public void addTransaction(Transaction transaction) {
-        transactions
-                .computeIfAbsent(transaction.getAccountNumber(), key -> new ArrayList<>())
-                .add(transaction);
+        if(this.transactionCount == transactions.length)
+            throw new TransactionLimitExceededException("Addition not allowed: maximum number of transactions have been made");
+
+        transactions[this.transactionCount] = transaction;
         this.transactionCount++;
     }
 
@@ -57,14 +61,14 @@ public class TransactionManager {
      * Retrieves all transactions associated with an account.
      *
      * @param accountNumber the account identifier
-     * @return a List of transactions
+     * @return an array of empty transactions (empty if none found)
      */
-    public List<Transaction> viewTransactionsByAccount(String accountNumber) {
-        return transactions
-                .getOrDefault(accountNumber, Collections.emptyList())
-                .stream()
-                .sorted(Comparator.comparing(Transaction::getTimestamp).reversed())
-                .toList();
+    public Transaction[] viewTransactionsByAccount(String accountNumber) {
+        return Arrays.stream(transactions)
+                .filter(Objects::nonNull)
+                .filter(transaction -> Objects.equals(transaction.getAccountNumber(), accountNumber))
+                .sorted((t1, t2) -> t2.getTimestamp().compareTo(t1.getTimestamp()))
+                .toArray(Transaction[]::new);
     }
 
     /**
@@ -75,9 +79,9 @@ public class TransactionManager {
      */
     public double calculateTotalDeposits(String accountNumber) {
         TransactionType transactionType = TransactionType.DEPOSIT;
-        return transactions
-                .getOrDefault(accountNumber, Collections.emptyList())
-                .stream()
+        return Arrays.stream(transactions, 0, this.transactionCount)
+                .filter(Objects::nonNull)
+                .filter(transaction -> Objects.equals(transaction.getAccountNumber(), accountNumber))
                 .filter(transaction -> transaction.getTransactionType() == transactionType)
                 .mapToDouble(Transaction::getAmount)
                 .sum();
@@ -91,9 +95,9 @@ public class TransactionManager {
      */
     public double calculateTotalWithdrawals(String accountNumber) {
         TransactionType transactionType = TransactionType.WITHDRAWAL;
-        return transactions
-                .getOrDefault(accountNumber, Collections.emptyList())
-                .stream()
+        return Arrays.stream(transactions, 0, this.transactionCount)
+                .filter(Objects::nonNull)
+                .filter(transaction -> Objects.equals(transaction.getAccountNumber(), accountNumber))
                 .filter(transaction -> transaction.getTransactionType() == transactionType)
                 .mapToDouble(Transaction::getAmount)
                 .sum();
