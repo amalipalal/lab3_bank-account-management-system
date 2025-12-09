@@ -1,14 +1,12 @@
 package services;
 
-import config.AppConfig;
 import interfaces.AutoIdGenerator;
 import models.Account;
 import models.Transaction;
 import models.enums.TransactionType;
 import services.exceptions.TransactionLimitExceededException;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Handles creation, storage, and querying of transactions within the system.
@@ -16,14 +14,14 @@ import java.util.Objects;
  */
 public class TransactionManager {
     private final AutoIdGenerator idGenerator;
-    private final Transaction[] transactions;
+    private final Map<String, List<Transaction>> transactions;
     // keeps track of successful transactions since unsuccessful
     // transactions still increase idGenerator transaction count
     private int transactionCount;
 
     public TransactionManager(AutoIdGenerator idGenerator) {
         this.idGenerator = idGenerator;
-        this.transactions = new Transaction[AppConfig.MAX_TRANSACTIONS];
+        this.transactions = new HashMap<>();
         this.transactionCount = 0;
     }
 
