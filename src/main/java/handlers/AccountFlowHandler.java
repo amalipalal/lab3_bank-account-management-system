@@ -10,6 +10,8 @@ import utils.DisplayUtil;
 import utils.InputReader;
 import utils.ValidationUtil;
 
+import java.util.List;
+
 public class AccountFlowHandler {
 
     private final BankingService bankingService;
@@ -130,14 +132,14 @@ public class AccountFlowHandler {
     public void handleAccountListingFlow() {
         System.out.println("ACCOUNT LISTING");
 
-        Account[] allAccounts = this.bankingService.viewAllAccounts();
+        List<Account> allAccounts = this.bankingService.viewAllAccounts();
         double totalBalance = this.bankingService.getTotalBankBalance();
 
         DisplayUtil.displayAccountListing(allAccounts);
 
         System.out.println();
 
-        System.out.println("Total Accounts: " + allAccounts.length);
+        System.out.println("Total Accounts: " + allAccounts.size());
         System.out.println("Total Bank Balance: " + DisplayUtil.displayAmount(totalBalance));
         System.out.println();
     }
