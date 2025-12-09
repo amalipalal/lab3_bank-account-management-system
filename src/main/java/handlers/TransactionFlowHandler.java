@@ -10,6 +10,8 @@ import utils.DisplayUtil;
 import utils.InputReader;
 import utils.ValidationUtil;
 
+import java.util.List;
+
 public class TransactionFlowHandler {
 
     private final BankingService bankingService;
@@ -93,10 +95,10 @@ public class TransactionFlowHandler {
 
         DisplayUtil.displayAccountDetails(customerAccount);
 
-        Transaction[] customerTransactions = this.bankingService.getTransactionsByAccount(
+        List<Transaction> customerTransactions = this.bankingService.getTransactionsByAccount(
                 customerAccount.getAccountNumber());
 
-        if (customerTransactions.length == 0) {
+        if (customerTransactions.isEmpty()) {
             DisplayUtil.displayNotice("No transactions recorded for this account.");
         } else {
             DisplayUtil.displayMultipleTransactions(customerTransactions);
@@ -104,15 +106,15 @@ public class TransactionFlowHandler {
         }
     }
 
-    private void displayTransactionTotals(Transaction[] transactions) {
-        String accountNumber = transactions[0].getAccountNumber();
+    private void displayTransactionTotals(List<Transaction> transactions) {
+        String accountNumber = transactions.getFirst().getAccountNumber();
 
         double totalDeposits = this.bankingService.getTotalDeposit(accountNumber);
         double totalWithdrawals = this.bankingService.getTotalWithdrawals(accountNumber);
 
         double netChange = totalDeposits - totalWithdrawals;
 
-        System.out.println("Total Transactions: " + transactions.length);
+        System.out.println("Total Transactions: " + transactions.size());
         System.out.println("Total Deposits: " + DisplayUtil.displayAmount(totalDeposits));
         System.out.println("Total Withdrawals: " + DisplayUtil.displayAmount(totalWithdrawals));
         System.out.println("Net Change: " + DisplayUtil.displayAmount(netChange));
