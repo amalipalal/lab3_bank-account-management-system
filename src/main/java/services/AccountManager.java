@@ -9,8 +9,7 @@ import models.SavingsAccount;
 import services.exceptions.AccountLimitExceededException;
 import services.exceptions.AccountNotFoundException;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Manages account creation, storage, and lookup operations.
@@ -21,11 +20,11 @@ import java.util.Objects;
  */
 public class AccountManager {
     private final AutoIdGenerator idGenerator;
-    private final Account[] accounts;
+    private final Map<String, Account> accounts;
 
     public AccountManager(AutoIdGenerator idGenerator) {
         this.idGenerator = idGenerator;
-        this.accounts = new Account[AppConfig.MAX_ACCOUNTS];
+        this.accounts = new HashMap<>();
     }
 
     /**
