@@ -57,14 +57,14 @@ public class TransactionManager {
      * Retrieves all transactions associated with an account.
      *
      * @param accountNumber the account identifier
-     * @return an array of empty transactions (empty if none found)
+     * @return a List of transactions
      */
-    public Transaction[] viewTransactionsByAccount(String accountNumber) {
-        return Arrays.stream(transactions)
-                .filter(Objects::nonNull)
-                .filter(transaction -> Objects.equals(transaction.getAccountNumber(), accountNumber))
-                .sorted((t1, t2) -> t2.getTimestamp().compareTo(t1.getTimestamp()))
-                .toArray(Transaction[]::new);
+    public List<Transaction> viewTransactionsByAccount(String accountNumber) {
+        return transactions
+                .getOrDefault(accountNumber, Collections.emptyList())
+                .stream()
+                .sorted(Comparator.comparing(Transaction::getTimestamp).reversed())
+                .toList();
     }
 
     /**
