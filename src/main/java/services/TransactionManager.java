@@ -75,9 +75,9 @@ public class TransactionManager {
      */
     public double calculateTotalDeposits(String accountNumber) {
         TransactionType transactionType = TransactionType.DEPOSIT;
-        return Arrays.stream(transactions, 0, this.transactionCount)
-                .filter(Objects::nonNull)
-                .filter(transaction -> Objects.equals(transaction.getAccountNumber(), accountNumber))
+        return transactions
+                .getOrDefault(accountNumber, Collections.emptyList())
+                .stream()
                 .filter(transaction -> transaction.getTransactionType() == transactionType)
                 .mapToDouble(Transaction::getAmount)
                 .sum();
@@ -91,9 +91,9 @@ public class TransactionManager {
      */
     public double calculateTotalWithdrawals(String accountNumber) {
         TransactionType transactionType = TransactionType.WITHDRAWAL;
-        return Arrays.stream(transactions, 0, this.transactionCount)
-                .filter(Objects::nonNull)
-                .filter(transaction -> Objects.equals(transaction.getAccountNumber(), accountNumber))
+        return transactions
+                .getOrDefault(accountNumber, Collections.emptyList())
+                .stream()
                 .filter(transaction -> transaction.getTransactionType() == transactionType)
                 .mapToDouble(Transaction::getAmount)
                 .sum();
