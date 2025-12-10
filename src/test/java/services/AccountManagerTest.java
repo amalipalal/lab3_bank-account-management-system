@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import services.exceptions.AccountNotFoundException;
 import utils.id.AccountIdGenerator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.Mockito.when;
 
@@ -19,11 +21,15 @@ class AccountManagerTest {
     @Mock
     private AccountIdGenerator accountIdGenerator;
 
-    @InjectMocks
+    private Map<String, Account> accounts;
     private AccountManager accountManager;
 
     @BeforeEach
-    void setup() { MockitoAnnotations.openMocks(this); }
+    void setup() {
+        MockitoAnnotations.openMocks(this);
+        accounts = new HashMap<>();
+        accountManager = new AccountManager(accountIdGenerator, accounts);
+    }
 
     @Test
     @DisplayName("Should return 0 when no account exists")
