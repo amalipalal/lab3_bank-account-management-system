@@ -67,7 +67,7 @@ public class TerminalApplication {
             try {
                 DisplayUtil.displayMainMenu();
 
-                int userSelection = input.readInt("Select an option (1-6)", 1, 6);
+                int userSelection = input.readInt("Select an option (1-7)", 1, 7);
                 System.out.println();
 
                 userIsActive = handleMenuSelection(userSelection);
@@ -102,9 +102,12 @@ public class TerminalApplication {
                 transactionFlowHandler.handleTransactionListingFlow();
                 break;
             case 5:
-                testHandler.run();
+                fileFlowHandler.handleSavingApplicationFlow();
                 break;
             case 6:
+                testHandler.run();
+                break;
+            case 7:
                 return false;
             default:
                 DisplayUtil.displayNotice("Wrong number selection");
