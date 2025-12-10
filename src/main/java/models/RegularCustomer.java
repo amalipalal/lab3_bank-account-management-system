@@ -17,4 +17,15 @@ public class RegularCustomer extends Customer {
     public CustomerType getCustomerType() {
         return CustomerType.REGULAR;
     }
+
+    @Override
+    public String toCsv() {
+        return String.join(",",
+                this.getCustomerType().toString(),
+                super.getName(),
+                String.valueOf(super.getAge()),
+                super.getContact(),
+                super.getAddress()
+        );
+    }
 }
