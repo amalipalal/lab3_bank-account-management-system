@@ -80,6 +80,19 @@ public class SavingsAccount extends Account {
         super.setBalance(newAccountBalance);
     }
 
+    @Override
+    public String toCsv() {
+        final int MONTHLY_FEE = 0;
+        return String.join(",",
+                this.getAccountType().toString(),
+                super.getAccountNumber(),
+                super.getCustomer().toCsv(),
+                String.valueOf(super.getBalance()),
+                super.getStatus(),
+                String.valueOf(MONTHLY_FEE)
+        );
+    }
+
     public double calculateInterest() {
         return super.getBalance() * this.INTEREST_RATE;
     }

@@ -84,6 +84,18 @@ public class CheckingAccount extends Account {
         super.setBalance(newAccountBalance);
     }
 
+    @Override
+    public String toCsv() {
+        return String.join(",",
+                this.getAccountType().toString(),
+                super.getAccountNumber(),
+                super.getCustomer().toCsv(),
+                String.valueOf(super.getBalance()),
+                super.getStatus(),
+                String.valueOf(this.monthlyFee)
+        );
+    }
+
     public void applyMonthlyFee() throws OverdraftExceededException{
         double newAccountBalance = super.getBalance() - this.monthlyFee;
         if(newAccountBalance < -this.OVERDRAFT_LIMIT) {

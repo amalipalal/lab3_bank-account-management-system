@@ -75,4 +75,6 @@ public abstract class Account implements Transactable {
     public void setBalance(double balance) {
         this.balance = balance;
     }
+
+    public abstract String toCsv();
 }
