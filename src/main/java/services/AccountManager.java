@@ -21,9 +21,9 @@ public class AccountManager {
     private final AutoIdGenerator idGenerator;
     private final Map<String, Account> accounts;
 
-    public AccountManager(AutoIdGenerator idGenerator) {
+    public AccountManager(AutoIdGenerator idGenerator, Map<String, Account> accounts) {
         this.idGenerator = idGenerator;
-        this.accounts = new HashMap<>();
+        this.accounts = accounts;
     }
 
     /**

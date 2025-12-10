@@ -10,4 +10,7 @@ public class AppConfig {
 
     public static final int MAX_ACCOUNTS = 50;
     public static final int MAX_TRANSACTIONS = 200;
+
+    public static final String ACC_STORE_FILE_NAME = "accounts.txt";
+    public static final String TRANS_STORE_FILE_NAME = "transactions.txt";
 }

@@ -55,4 +55,6 @@ public abstract class Customer {
     public int getAge() {
         return age;
     }
+
+    public abstract String toCsv();
 }
