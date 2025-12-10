@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,8 +134,15 @@ public class FileStorageService implements DataStorageService {
     }
 
     @Override
-    public void saveAccounts() throws IOException {
+    public void saveAccounts(List<Account> accounts) throws IOException {
+        Path path = Paths.get(this.accountsFile);
 
+        List<String> lines = new ArrayList<>();
+        // Provides column structure that would be ignored when reading due to '#'
+        lines.add("#AccountType,AccountNumber,CustomerType,CustomerName,CustomerAge,CustomerContact,CustomerAddress,AccountBalance,AccountStatus,MonthlyFee");
+
+        accounts.forEach(account -> lines.add(account.toCsv()));
+        Files.write(path, lines, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
     @Override
