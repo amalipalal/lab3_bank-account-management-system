@@ -1,5 +1,6 @@
 import config.AppConfig;
 import handlers.AccountFlowHandler;
+import handlers.FileFlowHandler;
 import handlers.TestHandler;
 import handlers.TransactionFlowHandler;
 import interfaces.DataStorageService;
@@ -25,6 +26,7 @@ public class TerminalApplication {
     private final InputReader input;
     private final AccountFlowHandler accountFlowHandler;
     private final TransactionFlowHandler transactionFlowHandler;
+    private final FileFlowHandler fileFlowHandler;
     private final TestHandler testHandler;
 
     public TerminalApplication() {
@@ -41,6 +43,7 @@ public class TerminalApplication {
         this.input = new InputReader(new Scanner(System.in));
         this.accountFlowHandler = new AccountFlowHandler(bankingService, input);
         this.transactionFlowHandler = new TransactionFlowHandler(bankingService, input);
+        this.fileFlowHandler = new FileFlowHandler(bankingService, dataStorageService, input);
         this.testHandler = new TestHandler();
     }
 
