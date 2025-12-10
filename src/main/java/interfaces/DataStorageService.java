@@ -28,7 +28,7 @@ public interface DataStorageService {
      *
      * @throws IOException if there is an error writing to the storage.
      */
-    void saveAccounts() throws IOException;
+    void saveAccounts(List<Account> accounts) throws IOException;
 
     /**
      * Loads all transactions from the storage.
