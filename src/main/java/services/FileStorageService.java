@@ -193,6 +193,13 @@ public class FileStorageService implements DataStorageService {
 
     @Override
     public void saveTransactions(List<Transaction> transactions) throws IOException {
+        Path path = Paths.get(this.transactionsFile);
 
+        List<String> lines = new ArrayList<>();
+        // Provides column structure that would be ignored when reading due to '#'
+        lines.add("#transactionId,transactionType,accountNumber,amount,balanceAfter,timestamp");
+
+        transactions.forEach(transaction -> lines.add(transaction.toCsv()));
+        Files.write(path, lines, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 }
