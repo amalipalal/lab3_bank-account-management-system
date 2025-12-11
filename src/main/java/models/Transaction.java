@@ -18,18 +18,16 @@ public class Transaction {
             TransactionType transactionType,
             String accountNumber,
             double amount,
-            double balanceAfter)
+            double balanceAfter,
+            String timestamp
+    )
     {
         this.transactionId = transactionId;
         this.transactionType = transactionType;
         this.accountNumber = accountNumber;
         this.amount = amount;
         this.balanceAfter = balanceAfter;
-        this.timestamp = generateTimestamp();
-    }
-
-    private String generateTimestamp() {
-        return Instant.now().toString();
+        this.timestamp = timestamp;
     }
 
     public String displayTransactionDetails() {
