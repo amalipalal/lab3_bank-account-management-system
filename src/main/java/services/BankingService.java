@@ -108,6 +108,10 @@ public class BankingService {
         return newAccount;
     }
 
+    public List<Transaction> viewAllTransactions() {
+        return transactionManager.getAllTransactions();
+    }
+
     public List<Account> viewAllAccounts() {
         return accountManager.getAllAccounts();
     }
