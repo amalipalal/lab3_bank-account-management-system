@@ -31,9 +31,14 @@ public class AccountIdGenerator implements AutoIdGenerator {
         String indexString = accountNumber.substring(startIndex);
 
         try {
-            return Integer.parseInt(indexString) - 1;
+            return Integer.parseInt(indexString);
         } catch (NumberFormatException e) {
             throw new InvalidAccountNumberException("Account number format is invalid: " + accountNumber);
         }
+    }
+
+    @Override
+    public void setIdCounter(int count) {
+        this.accountCounter = count;
     }
 }

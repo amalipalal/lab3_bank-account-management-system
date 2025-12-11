@@ -33,4 +33,9 @@ public class TransactionIdGenerator implements AutoIdGenerator {
             throw new RuntimeException("Transaction number format is invalid: " + transactionNumber);
         }
     }
+
+    @Override
+    public void setIdCounter(int count) {
+        this.transactionCounter = count;
+    }
 }
