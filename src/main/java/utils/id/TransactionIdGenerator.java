@@ -28,7 +28,7 @@ public class TransactionIdGenerator implements AutoIdGenerator {
         String indexString = transactionNumber.substring(startIndex);
 
         try {
-            return Integer.parseInt(indexString) - 1;
+            return Integer.parseInt(indexString);
         } catch (NumberFormatException e) {
             throw new RuntimeException("Transaction number format is invalid: " + transactionNumber);
         }
