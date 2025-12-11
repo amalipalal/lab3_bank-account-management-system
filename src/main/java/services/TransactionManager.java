@@ -23,6 +23,19 @@ public class TransactionManager {
         this.idGenerator = idGenerator;
         this.transactions = transactions;
         this.transactionCount = transactions.values().stream().mapToInt(List::size).sum();
+
+        updateIdGenerator();
+    }
+
+    private void updateIdGenerator() {
+        if(transactions.isEmpty()) return;
+
+        int maxCount = transactions.keySet().stream()
+                .map(idGenerator::extractIndex)
+                .max(Integer::compareTo)
+                .orElse(0);
+
+        idGenerator.setIdCounter(maxCount);
     }
 
     /**
@@ -111,5 +124,9 @@ public class TransactionManager {
      */
     public int getTransactionCount() {
         return this.transactionCount;
+    }
+
+    public List<Transaction> getAllTransactions() {
+        return this.transactions.values().stream().flatMap(List::stream).toList();
     }
 }
