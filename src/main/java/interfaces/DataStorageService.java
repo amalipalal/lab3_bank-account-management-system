@@ -44,5 +44,5 @@ public interface DataStorageService {
      *
      * @throws IOException if there is an error writing to the storage.
      */
-    void saveTransactions() throws IOException;
+    void saveTransactions(List<Transaction> transactions) throws IOException;
 }

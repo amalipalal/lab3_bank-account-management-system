@@ -5,6 +5,7 @@ import handlers.TestHandler;
 import handlers.TransactionFlowHandler;
 import interfaces.DataStorageService;
 import models.Account;
+import models.Transaction;
 import services.AccountManager;
 import services.FileStorageService;
 import services.TransactionManager;
@@ -17,6 +18,7 @@ import utils.id.TransactionIdGenerator;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -35,10 +37,11 @@ public class TerminalApplication {
                 AppConfig.TRANS_STORE_FILE_NAME
         );
         Map<String, Account> savedAccounts = loadSavedAccounts(dataStorageService);
+        Map<String, List<Transaction>> savedTransactions = loadSavedTransactions(dataStorageService);
 
         this.bankingService = new BankingService(
                 new AccountManager(new AccountIdGenerator(), savedAccounts),
-                new TransactionManager(new TransactionIdGenerator())
+                new TransactionManager(new TransactionIdGenerator(), savedTransactions)
         );
         this.input = new InputReader(new Scanner(System.in));
         this.accountFlowHandler = new AccountFlowHandler(bankingService, input);
@@ -50,6 +53,15 @@ public class TerminalApplication {
     private Map<String, Account> loadSavedAccounts(DataStorageService store) {
         try {
             return store.loadAccounts();
+        } catch (IOException e) {
+            DisplayUtil.displayNotice(e.getMessage());
+            return new HashMap<>();
+        }
+    }
+
+    private Map<String, List<Transaction>> loadSavedTransactions(DataStorageService store) {
+        try {
+            return store.loadTransactions();
         } catch (IOException e) {
             DisplayUtil.displayNotice(e.getMessage());
             return new HashMap<>();

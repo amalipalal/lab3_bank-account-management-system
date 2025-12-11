@@ -4,16 +4,14 @@ import interfaces.DataStorageService;
 import models.*;
 import models.enums.AccountType;
 import models.enums.CustomerType;
+import models.enums.TransactionType;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -147,11 +145,61 @@ public class FileStorageService implements DataStorageService {
 
     @Override
     public Map<String, List<Transaction>> loadTransactions() throws IOException {
-        return new HashMap<>();
+        Path path = Paths.get(this.transactionsFile);
+        Map<String, List<Transaction>> transactions = new HashMap<>();
+
+        if (Files.notExists(path)) return transactions;
+
+        Set<String> seenIds = new HashSet<>();
+        try (Stream<String> lines = Files.lines(path)) {
+            lines.map(String::trim)
+                    .filter(line -> !line.isEmpty())
+                    .filter(line -> !line.startsWith("#"))
+                    .forEach(line -> {
+                        Transaction transaction = parseTransactionLine(line);
+                        // Skip duplicate transactions
+                        if(seenIds.add(transaction.getTransactionId()))
+                            addToTransactions(transactions, transaction);
+                    });
+        }
+        return transactions;
+    }
+
+    private void addToTransactions(Map<String, List<Transaction>> transactions, Transaction transaction) {
+        transactions
+                .computeIfAbsent(transaction.getAccountNumber(), k -> new ArrayList<>())
+                .add(transaction);
+    }
+
+    private Transaction parseTransactionLine(String line) {
+        String[] cols = line.split(",", -1);
+        final int EXPECTED = 5;
+        if (cols.length < EXPECTED) {
+            throw new IllegalArgumentException(
+                    "Invalid transaction row (expected " + EXPECTED + " columns): " + line);
+        }
+
+        cols = Arrays.stream(cols).map(String::trim).toArray(String[]::new);
+
+        String txnId = cols[0];
+        TransactionType txnType = TransactionType.valueOf(cols[1].toUpperCase());
+        String accountNumber = cols[2];
+        double amount = parseDouble(cols[3], "amount", line);
+        double balanceAfter = parseDouble(cols[4], "balanceAfter", line);
+        String timestamp = cols[5];
+
+        return new Transaction(txnId, txnType, accountNumber, amount, balanceAfter, timestamp);
     }
 
     @Override
-    public void saveTransactions() throws IOException {
+    public void saveTransactions(List<Transaction> transactions) throws IOException {
+        Path path = Paths.get(this.transactionsFile);
 
+        List<String> lines = new ArrayList<>();
+        // Provides column structure that would be ignored when reading due to '#'
+        lines.add("#transactionId,transactionType,accountNumber,amount,balanceAfter,timestamp");
+
+        transactions.forEach(transaction -> lines.add(transaction.toCsv()));
+        Files.write(path, lines, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 }

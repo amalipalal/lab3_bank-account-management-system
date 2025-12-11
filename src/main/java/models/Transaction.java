@@ -2,9 +2,6 @@ package models;
 
 import models.enums.TransactionType;
 
-import java.text.DecimalFormat;
-import java.time.Instant;
-
 public class Transaction {
     private final String transactionId;
     private final TransactionType transactionType;
@@ -18,18 +15,16 @@ public class Transaction {
             TransactionType transactionType,
             String accountNumber,
             double amount,
-            double balanceAfter)
+            double balanceAfter,
+            String timestamp
+    )
     {
         this.transactionId = transactionId;
         this.transactionType = transactionType;
         this.accountNumber = accountNumber;
         this.amount = amount;
         this.balanceAfter = balanceAfter;
-        this.timestamp = generateTimestamp();
-    }
-
-    private String generateTimestamp() {
-        return Instant.now().toString();
+        this.timestamp = timestamp;
     }
 
     public String displayTransactionDetails() {
@@ -58,5 +53,16 @@ public class Transaction {
 
     public String getTimestamp() {
         return this.timestamp;
+    }
+
+    public String toCsv() {
+        return String.join(",",
+                this.transactionId,
+                this.transactionType.toString(),
+                this.accountNumber,
+                String.valueOf(this.amount),
+                String.valueOf(this.balanceAfter),
+                this.timestamp
+        );
     }
 }

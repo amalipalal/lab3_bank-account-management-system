@@ -2,6 +2,7 @@ package handlers;
 
 import interfaces.DataStorageService;
 import models.Account;
+import models.Transaction;
 import services.BankingService;
 import utils.DisplayUtil;
 import utils.InputReader;
@@ -24,16 +25,30 @@ public class FileFlowHandler {
 
     public void handleSavingApplicationFlow() {
         DisplayUtil.displayNotice("Saving Application Data");
+        handleSavingAccounts();
+        handleSavingTransactions();
+        System.out.println("File save completed successfully");
+    }
 
+    private void handleSavingAccounts() {
         System.out.println("Saving accounts data...");
         List<Account> accounts = bankingService.viewAllAccounts();
         try {
             dataStorageService.saveAccounts(accounts);
+            System.out.println("Accounts saved successfully");
         } catch (IOException e) {
-            DisplayUtil.displayNotice("Could not save application. Try again later");
+            DisplayUtil.displayNotice("Could not save accounts. Try again later");
         }
+    }
 
-        System.out.println("Accounts saved successfully");
-        System.out.println("File save completed successfully");
+    private void handleSavingTransactions() {
+        System.out.println("Saving transactions data...");
+        List<Transaction> transactions = bankingService.viewAllTransactions();
+        try {
+            dataStorageService.saveTransactions(transactions);
+            System.out.println("Transactions saved successfully");
+        } catch (IOException e) {
+            DisplayUtil.displayNotice("Could not save transactions. Try again later.");
+        }
     }
 }

@@ -7,6 +7,7 @@ import models.Customer;
 import models.SavingsAccount;
 import services.exceptions.AccountNotFoundException;
 import services.exceptions.InvalidAccountNumberException;
+import utils.DisplayUtil;
 
 import java.util.*;
 
@@ -24,6 +25,19 @@ public class AccountManager {
     public AccountManager(AutoIdGenerator idGenerator, Map<String, Account> accounts) {
         this.idGenerator = idGenerator;
         this.accounts = accounts;
+
+        updateIdGenerator();
+    }
+
+    private void updateIdGenerator() {
+        if(accounts.isEmpty()) return;
+
+        int maxCount = accounts.keySet().stream()
+                .map(idGenerator::extractIndex)
+                .max(Integer::compareTo)
+                .orElse(0);
+
+        idGenerator.setIdCounter(maxCount);
     }
 
     /**

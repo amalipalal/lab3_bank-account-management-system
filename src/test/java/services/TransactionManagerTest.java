@@ -6,23 +6,28 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import utils.id.TransactionIdGenerator;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TransactionManagerTest {
 
     @Mock
     private TransactionIdGenerator transactionIdGenerator;
 
-    @InjectMocks
+    private Map<String, List<Transaction>> transactions;
+
     private TransactionManager transactionManager;
 
     @BeforeEach
-    void setup()
-    {
+    void setup() {
         MockitoAnnotations.openMocks(this);
+        transactions = new HashMap<>();
+        transactionManager = new TransactionManager(transactionIdGenerator, transactions);
     }
 
     @Test
@@ -37,10 +42,21 @@ public class TransactionManagerTest {
     @Test
     @DisplayName("Should increase transaction count on transactions")
     void testTransactionCountMultipleTransactions() {
+        String time = "2025-12-10T08:45:12.345Z";
         Transaction deposit  = new Transaction(
-                "TXN001", TransactionType.DEPOSIT, "ACC001", 1000, 2000);
+                "TXN001",
+                TransactionType.DEPOSIT,
+                "ACC001",
+                1000,
+                2000,
+                time);
         Transaction withdrawal = new Transaction(
-                "TXN002", TransactionType.WITHDRAWAL, "ACC001", 50, 1500);
+                "TXN002",
+                TransactionType.WITHDRAWAL,
+                "ACC001",
+                50,
+                1500,
+                time);
 
         transactionManager.addTransaction(deposit);
         transactionManager.addTransaction(withdrawal);
@@ -72,12 +88,13 @@ public class TransactionManagerTest {
     @Test
     @DisplayName("Should update total transactions after transacting")
     void testTransactionTotalAfterTransaction() {
+        String time = "2025-12-10T08:45:12.345Z";
         Transaction deposit  = new Transaction(
-                "TXN001", TransactionType.DEPOSIT, "ACC001", 1000, 2000);
+                "TXN001", TransactionType.DEPOSIT, "ACC001", 1000, 2000, time);
         Transaction withdrawal = new Transaction(
-                "TXN002", TransactionType.WITHDRAWAL, "ACC001", 50, 1500);
+                "TXN002", TransactionType.WITHDRAWAL, "ACC001", 50, 1500, time);
         Transaction secondDeposit = new Transaction(
-                "TXN003", TransactionType.WITHDRAWAL, "ACC002", 500, 500);
+                "TXN003", TransactionType.WITHDRAWAL, "ACC002", 500, 500, time);
 
         transactionManager.addTransaction(deposit);
         transactionManager.addTransaction(withdrawal);

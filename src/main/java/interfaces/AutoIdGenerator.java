@@ -23,10 +23,17 @@ public interface AutoIdGenerator {
 
     /**
      * Extracts the internal index or numeric portion from a given ID string.
-     * Useful for mapping IDs to array indices or storage positions.
      *
      * @param idNumber The ID string to extract the index from.
-     * @return The numeric index extracted from the ID.
+     * @return The numeric value inside the ID.
      */
     int extractIndex(String idNumber);
+
+    /**
+     * Ensures the count of the number of ids that have been generated
+     * are up to date.
+     *
+     * @param count of the of ids generated on startup
+     */
+    void setIdCounter(int count);
 }

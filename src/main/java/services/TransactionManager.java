@@ -5,6 +5,7 @@ import models.Account;
 import models.Transaction;
 import models.enums.TransactionType;
 
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -18,10 +19,23 @@ public class TransactionManager {
     // transactions still increase idGenerator transaction count
     private int transactionCount;
 
-    public TransactionManager(AutoIdGenerator idGenerator) {
+    public TransactionManager(AutoIdGenerator idGenerator, Map<String, List<Transaction>> transactions) {
         this.idGenerator = idGenerator;
-        this.transactions = new HashMap<>();
-        this.transactionCount = 0;
+        this.transactions = transactions;
+        this.transactionCount = transactions.values().stream().mapToInt(List::size).sum();
+
+        updateIdGenerator();
+    }
+
+    private void updateIdGenerator() {
+        if(transactions.isEmpty()) return;
+
+        int maxCount = transactions.keySet().stream()
+                .map(idGenerator::extractIndex)
+                .max(Integer::compareTo)
+                .orElse(0);
+
+        idGenerator.setIdCounter(maxCount);
     }
 
     /**
@@ -37,7 +51,11 @@ public class TransactionManager {
             TransactionType transactionType, Account account, double amount, double balanceAfterTransaction) {
         String transactionId = idGenerator.generateId();
         return new Transaction(
-                transactionId, transactionType, account.getAccountNumber(), amount, balanceAfterTransaction);
+                transactionId, transactionType, account.getAccountNumber(), amount, balanceAfterTransaction, generateTimestamp());
+    }
+
+    private String generateTimestamp() {
+        return Instant.now().toString();
     }
 
     /**
@@ -106,5 +124,9 @@ public class TransactionManager {
      */
     public int getTransactionCount() {
         return this.transactionCount;
+    }
+
+    public List<Transaction> getAllTransactions() {
+        return this.transactions.values().stream().flatMap(List::stream).toList();
     }
 }
