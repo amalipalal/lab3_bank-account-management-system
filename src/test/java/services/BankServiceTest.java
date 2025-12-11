@@ -39,7 +39,12 @@ public class BankServiceTest {
     void testConfirmTransactionDeposit() throws OverdraftExceededException, InsufficientFundsException {
         Account account = mock(Account.class);
         Transaction deposit = new Transaction(
-                "TXN001", TransactionType.DEPOSIT, "ACC001", 200, 700);
+                "TXN001",
+                TransactionType.DEPOSIT,
+                "ACC001",
+                200,
+                700,
+                "2025-12-10T08:45:12.345Z");
 
         bankingService.confirmTransaction(account, deposit);
 
@@ -52,7 +57,12 @@ public class BankServiceTest {
     void testConfirmTransactionWithdrawal() throws Exception {
         Account account = mock(Account.class);
         Transaction withdrawal = new Transaction(
-                "TXN001", TransactionType.WITHDRAWAL, "ACC001", 200, 700);
+                "TXN001",
+                TransactionType.WITHDRAWAL,
+                "ACC001",
+                200,
+                700,
+                "2025-12-10T08:45:12.345Z");
 
         bankingService.confirmTransaction(account, withdrawal);
 
@@ -87,7 +97,15 @@ public class BankServiceTest {
         Account account = new CheckingAccount("ACC001", customer, 1000, "active");
 
         when(transactionManager.createTransaction(TransactionType.WITHDRAWAL, account, 20, 980))
-                .thenReturn(new Transaction("TXN001", TransactionType.WITHDRAWAL, "ACC001", 20, 980));
+                .thenReturn(
+                        new Transaction(
+                                "TXN001",
+                                TransactionType.WITHDRAWAL,
+                                "ACC001",
+                                20,
+                                980,
+                                "2025-12-10T08:45:12.345Z")
+                );
         Transaction transaction = bankingService.processWithdrawal(account, 20);
 
         Assertions.assertEquals(TransactionType.WITHDRAWAL, transaction.getTransactionType());
@@ -105,7 +123,15 @@ public class BankServiceTest {
         Account account = new CheckingAccount("ACC001", customer, 1000, "active");
 
         when(transactionManager.createTransaction(TransactionType.DEPOSIT, account, 1000, 2000))
-                .thenReturn(new Transaction("TXN001", TransactionType.DEPOSIT, "ACC001", 1000, 2000));
+                .thenReturn(
+                        new Transaction(
+                                "TXN001",
+                                TransactionType.DEPOSIT,
+                                "ACC001",
+                                1000,
+                                2000,
+                                "2025-12-10T08:45:12.345Z")
+                );
         Transaction transaction = bankingService.processDeposit(account, 1000);
 
         Assertions.assertEquals(TransactionType.DEPOSIT, transaction.getTransactionType());
