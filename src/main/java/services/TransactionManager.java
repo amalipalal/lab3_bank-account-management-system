@@ -5,6 +5,7 @@ import models.Account;
 import models.Transaction;
 import models.enums.TransactionType;
 
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -37,7 +38,11 @@ public class TransactionManager {
             TransactionType transactionType, Account account, double amount, double balanceAfterTransaction) {
         String transactionId = idGenerator.generateId();
         return new Transaction(
-                transactionId, transactionType, account.getAccountNumber(), amount, balanceAfterTransaction);
+                transactionId, transactionType, account.getAccountNumber(), amount, balanceAfterTransaction, generateTimestamp());
+    }
+
+    private String generateTimestamp() {
+        return Instant.now().toString();
     }
 
     /**
