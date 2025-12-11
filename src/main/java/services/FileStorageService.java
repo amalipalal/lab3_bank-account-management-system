@@ -186,8 +186,9 @@ public class FileStorageService implements DataStorageService {
         String accountNumber = cols[2];
         double amount = parseDouble(cols[3], "amount", line);
         double balanceAfter = parseDouble(cols[4], "balanceAfter", line);
+        String timestamp = cols[5];
 
-        return new Transaction(txnId, txnType, accountNumber, amount, balanceAfter);
+        return new Transaction(txnId, txnType, accountNumber, amount, balanceAfter, timestamp);
     }
 
     @Override
