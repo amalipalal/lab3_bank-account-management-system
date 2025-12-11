@@ -69,6 +69,8 @@ public class TerminalApplication {
     }
 
     public void start() {
+        displayLoadMessages();
+
         // Populate the program with already existing customer accounts
         // defined within seed method
         seedData();
@@ -88,6 +90,16 @@ public class TerminalApplication {
                 DisplayUtil.displayNotice(e.getMessage());
             }
         }
+    }
+
+    private void displayLoadMessages() {
+        int accountsCount = bankingService.viewAllAccounts().size();
+        int transactionsCount = bankingService.viewAllTransactions().size();
+
+        DisplayUtil.displayNotice(
+                accountsCount + " accounts loaded from " + AppConfig.ACC_STORE_FILE_NAME);
+        DisplayUtil.displayNotice(
+                transactionsCount + " transactions loaded from " + AppConfig.TRANS_STORE_FILE_NAME);
     }
 
     public void seedData() {
