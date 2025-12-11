@@ -18,10 +18,10 @@ public class TransactionManager {
     // transactions still increase idGenerator transaction count
     private int transactionCount;
 
-    public TransactionManager(AutoIdGenerator idGenerator) {
+    public TransactionManager(AutoIdGenerator idGenerator, Map<String, List<Transaction>> transactions) {
         this.idGenerator = idGenerator;
-        this.transactions = new HashMap<>();
-        this.transactionCount = 0;
+        this.transactions = transactions;
+        this.transactionCount = transactions.values().stream().mapToInt(List::size).sum();
     }
 
     /**
