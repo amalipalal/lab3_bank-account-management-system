@@ -150,18 +150,25 @@ public class FileStorageService implements DataStorageService {
 
         if (Files.notExists(path)) return transactions;
 
+        Set<String> seenIds = new HashSet<>();
         try (Stream<String> lines = Files.lines(path)) {
             lines.map(String::trim)
                     .filter(line -> !line.isEmpty())
                     .filter(line -> !line.startsWith("#"))
                     .forEach(line -> {
                         Transaction transaction = parseTransactionLine(line);
-                        transactions
-                                .computeIfAbsent(transaction.getAccountNumber(), k -> new ArrayList<>())
-                                .add(transaction);
+                        // Skip duplicate transactions
+                        if(seenIds.add(transaction.getTransactionId()))
+                            addToTransactions(transactions, transaction);
                     });
         }
         return transactions;
+    }
+
+    private void addToTransactions(Map<String, List<Transaction>> transactions, Transaction transaction) {
+        transactions
+                .computeIfAbsent(transaction.getAccountNumber(), k -> new ArrayList<>())
+                .add(transaction);
     }
 
     private Transaction parseTransactionLine(String line) {
