@@ -127,29 +127,37 @@ public class TransactionFlowHandler {
     public void handleConcurrentTransactionFlow() {
         DisplayUtil.displayHeading("Multiple Transactions");
 
+        try {
+            List<Transaction> transactions = handleAccountSelection();
+            handleMultiTransactionConfirmation(transactions);
+        } catch (AccountNotFoundException e) {
+            DisplayUtil.displayNotice(e.getMessage());
+        }
+    }
+
+    private List<Transaction> handleAccountSelection() throws AccountNotFoundException {
         int transactionCount = input.readInt("How many accounts are you transacting to?", 2, 100);
         List<Transaction> transactions = new ArrayList<>();
 
         for(int count = 0; count < transactionCount; count++) {
             String accountNumber = input.readNonEmptyString(
                     "Account " + (count + 1), ValidationUtil::validateAccountNumber);
-            try {
-                Account acc = bankingService.getAccountByNumber(accountNumber);
-                Transaction transaction = handleTransactionTypeFlow(acc);
-                transactions.add(transaction);
-            } catch (AccountNotFoundException e) {
-                DisplayUtil.displayNotice(e.getMessage());
-                return;
-            }
+            Account acc = bankingService.getAccountByNumber(accountNumber);
+            Transaction transaction = handleTransactionTypeFlow(acc);
+            transactions.add(transaction);
         }
+        return transactions;
+    }
 
+    private void handleMultiTransactionConfirmation(List<Transaction> transactions) {
         DisplayUtil.displayHeading("Confirm Transactions");
         DisplayUtil.displayMultipleTransactions(transactions);
 
         System.out.println();
 
-        boolean isConfirmed = this.input.readYesOrNo("Confirm transactions? (Y/N)");
+        int transactionCount = transactions.size();
 
+        boolean isConfirmed = this.input.readYesOrNo("Confirm transactions? (Y/N)");
         if(isConfirmed) {
             this.executionService.submitTransactions(transactions);
             int successCount = transactionCount - this.executionService.getErrorCount();
