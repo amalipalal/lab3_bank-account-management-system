@@ -152,7 +152,10 @@ public class TransactionFlowHandler {
 
         if(isConfirmed) {
             this.executionService.submitTransactions(transactions);
-            System.out.println("Thread-safe operations completed successfully.");
+            int successCount = transactionCount - this.executionService.getErrorCount();
+            // To make sure error count doesn't end up being cumulative
+            this.executionService.resetErrorCount();
+            System.out.println(successCount + " thread-safe operations completed successfully.");
         } else {
             System.out.println("Transactions not confirmed. Aborting.");
         }
