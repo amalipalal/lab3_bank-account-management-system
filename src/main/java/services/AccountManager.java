@@ -91,8 +91,16 @@ public class AccountManager {
         return account;
     }
 
+    /**
+     * Returns all accounts sorted by account number
+     * in ascending order.
+     *
+     * @return sorted list of accounts
+     */
     public List<Account> getAllAccounts() {
-        return List.copyOf(accounts.values());
+        return accounts.values().stream()
+                .sorted(Comparator.comparing(Account::getAccountNumber))
+                .toList();
     }
 
     /**
