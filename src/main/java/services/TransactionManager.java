@@ -64,7 +64,7 @@ public class TransactionManager {
      *
      * @param transaction the transaction to store
      */
-    public void addTransaction(Transaction transaction) {
+    synchronized public void addTransaction(Transaction transaction) {
         transactions
                 .computeIfAbsent(transaction.getAccountNumber(), key -> new ArrayList<>())
                 .add(transaction);
