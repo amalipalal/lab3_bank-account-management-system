@@ -53,4 +53,14 @@ public class TransactionExecutionService {
         this.errorCollector.resetCount();
     }
 
+    public void shutdown() {
+        executorService.shutdown();
+        try {
+            if(!executorService.awaitTermination(5, TimeUnit.SECONDS))
+                executorService.shutdown();
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+        }
+    }
+
 }

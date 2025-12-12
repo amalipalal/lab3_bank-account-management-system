@@ -130,6 +130,7 @@ public class TerminalApplication {
                 fileFlowHandler.handleSavingApplicationFlow();
                 break;
             case 7:
+                executionService.shutdown();
                 return false;
             default:
                 DisplayUtil.displayNotice("Wrong number selection");
