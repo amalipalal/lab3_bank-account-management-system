@@ -35,9 +35,9 @@ public class DisplayUtil {
         System.out.println("1. Create Account");
         System.out.println("2. View Accounts");
         System.out.println("3. Process Transaction");
-        System.out.println("4. View Transaction History");
-        System.out.println("5. Save Data");
-        System.out.println("6. Run tests");
+        System.out.println("4. Process Multiple Transactions");
+        System.out.println("5. View Transaction History");
+        System.out.println("6. Save Data");
         System.out.println("7. Exit");
         System.out.println();
     }
