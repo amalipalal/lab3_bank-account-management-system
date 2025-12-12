@@ -71,10 +71,8 @@ public class SavingsAccount extends Account {
         double currentAccountBalance = super.getBalance();
 
         double newAccountBalance = currentAccountBalance - amount;
-        if(newAccountBalance < 0) {
-            throw new InvalidAmountException("Withdrawal amount exceeds available balance");
-        } else if (newAccountBalance < MINIMUM_BALANCE) {
-            throw new InsufficientFundsException("Withdrawal not allowed: balance is at minimum");
+        if (newAccountBalance < MINIMUM_BALANCE) {
+            throw new InsufficientFundsException("Withdrawal not allowed: Insufficient balance");
         }
 
         super.setBalance(newAccountBalance);

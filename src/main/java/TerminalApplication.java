@@ -5,11 +5,9 @@ import handlers.TestHandler;
 import handlers.TransactionFlowHandler;
 import interfaces.DataStorageService;
 import models.Account;
+import utils.ThreadErrorCollector;
 import models.Transaction;
-import services.AccountManager;
-import services.FileStorageService;
-import services.TransactionManager;
-import services.BankingService;
+import services.*;
 import utils.DataSeeder;
 import utils.DisplayUtil;
 import utils.InputReader;
@@ -25,11 +23,11 @@ import java.util.Scanner;
 public class TerminalApplication {
     private final DataStorageService dataStorageService;
     private final BankingService bankingService;
+    private final TransactionExecutionService executionService;
     private final InputReader input;
     private final AccountFlowHandler accountFlowHandler;
     private final TransactionFlowHandler transactionFlowHandler;
     private final FileFlowHandler fileFlowHandler;
-    private final TestHandler testHandler;
 
     public TerminalApplication() {
         this.dataStorageService = new FileStorageService(
@@ -43,11 +41,11 @@ public class TerminalApplication {
                 new AccountManager(new AccountIdGenerator(), savedAccounts),
                 new TransactionManager(new TransactionIdGenerator(), savedTransactions)
         );
+        this.executionService = new TransactionExecutionService(3, bankingService, new ThreadErrorCollector());
         this.input = new InputReader(new Scanner(System.in));
         this.accountFlowHandler = new AccountFlowHandler(bankingService, input);
-        this.transactionFlowHandler = new TransactionFlowHandler(bankingService, input);
+        this.transactionFlowHandler = new TransactionFlowHandler(bankingService, executionService, input);
         this.fileFlowHandler = new FileFlowHandler(bankingService, dataStorageService, input);
-        this.testHandler = new TestHandler();
     }
 
     private Map<String, Account> loadSavedAccounts(DataStorageService store) {
@@ -123,15 +121,16 @@ public class TerminalApplication {
                 transactionFlowHandler.handleTransactionFlow();
                 break;
             case 4:
-                transactionFlowHandler.handleTransactionListingFlow();
+                transactionFlowHandler.handleConcurrentTransactionFlow();
                 break;
             case 5:
-                fileFlowHandler.handleSavingApplicationFlow();
+                transactionFlowHandler.handleTransactionListingFlow();
                 break;
             case 6:
-                testHandler.run();
+                fileFlowHandler.handleSavingApplicationFlow();
                 break;
             case 7:
+                executionService.shutdown();
                 return false;
             default:
                 DisplayUtil.displayNotice("Wrong number selection");

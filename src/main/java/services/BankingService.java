@@ -65,13 +65,15 @@ public class BankingService {
             InsufficientFundsException {
         TransactionType type = transaction.getTransactionType();
 
-        switch (type) {
-            case TransactionType.WITHDRAWAL -> account.withdraw(transaction.getAmount());
-            case TransactionType.DEPOSIT -> account.deposit(transaction.getAmount());
-            default -> throw new IllegalArgumentException("Unsupported transaction type: " + type);
-        }
+        synchronized (account) {
+            switch (type) {
+                case TransactionType.WITHDRAWAL -> account.withdraw(transaction.getAmount());
+                case TransactionType.DEPOSIT -> account.deposit(transaction.getAmount());
+                default -> throw new IllegalArgumentException("Unsupported transaction type: " + type);
+            }
 
-        this.transactionManager.addTransaction(transaction);
+            this.transactionManager.addTransaction(transaction);
+        }
     }
 
     /**
