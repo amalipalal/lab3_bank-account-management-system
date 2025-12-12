@@ -5,20 +5,24 @@ import models.Transaction;
 import models.exceptions.InsufficientFundsException;
 import models.exceptions.OverdraftExceededException;
 import services.BankingService;
+import services.TransactionExecutionService;
 import services.exceptions.AccountNotFoundException;
 import utils.DisplayUtil;
 import utils.InputReader;
 import utils.ValidationUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionFlowHandler {
 
     private final BankingService bankingService;
+    private final TransactionExecutionService executionService;
     private final InputReader input;
 
-    public TransactionFlowHandler(BankingService bankingService, InputReader input) {
+    public TransactionFlowHandler(BankingService bankingService, TransactionExecutionService executionService, InputReader input) {
         this.bankingService = bankingService;
+        this.executionService = executionService;
         this.input = input;
     }
 
@@ -118,5 +122,39 @@ public class TransactionFlowHandler {
         System.out.println("Total Deposits: " + DisplayUtil.displayAmount(totalDeposits));
         System.out.println("Total Withdrawals: " + DisplayUtil.displayAmount(totalWithdrawals));
         System.out.println("Net Change: " + DisplayUtil.displayAmount(netChange));
+    }
+
+    public void handleConcurrentTransactionFlow() {
+        DisplayUtil.displayHeading("Multiple Transactions");
+
+        int transactionCount = input.readInt("How many accounts are you transacting to?", 2, 100);
+        List<Transaction> transactions = new ArrayList<>();
+
+        for(int count = 0; count < transactionCount; count++) {
+            String accountNumber = input.readNonEmptyString(
+                    "Account " + (count + 1), ValidationUtil::validateAccountNumber);
+            try {
+                Account acc = bankingService.getAccountByNumber(accountNumber);
+                Transaction transaction = handleTransactionTypeFlow(acc);
+                transactions.add(transaction);
+            } catch (AccountNotFoundException e) {
+                DisplayUtil.displayNotice(e.getMessage());
+                return;
+            }
+        }
+
+        DisplayUtil.displayHeading("Confirm Transactions");
+        DisplayUtil.displayMultipleTransactions(transactions);
+
+        System.out.println();
+
+        boolean isConfirmed = this.input.readYesOrNo("Confirm transactions? (Y/N)");
+
+        if(isConfirmed) {
+            this.executionService.submitTransactions(transactions);
+            System.out.println("Thread-safe operations completed successfully.");
+        } else {
+            System.out.println("Transactions not confirmed. Aborting.");
+        }
     }
 }
