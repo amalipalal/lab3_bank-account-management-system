@@ -16,6 +16,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Handles loading and saving of accounts and transactions from csv files.
+ * <p>
+ *  This service reconstructs domain objects from stored file data and
+ *  serializes in-memory objects back into file format.
+ * </p>
+ */
 public class FileStorageService implements DataStorageService {
 
     private final String accountsFile;
