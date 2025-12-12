@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class TransactionExecutionService {
     private final ExecutorService executorService;
@@ -40,7 +41,16 @@ public class TransactionExecutionService {
 
         if (errorCollector.hasErrors()) {
             errorCollector.showErrors();
+            errorCollector.clearErrors();
         }
+    }
+
+    public int getErrorCount() {
+        return this.errorCollector.getPREVIOUS_ERROR_COUNT();
+    }
+
+    public void resetErrorCount() {
+        this.errorCollector.resetCount();
     }
 
 }
