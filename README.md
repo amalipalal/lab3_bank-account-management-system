@@ -21,6 +21,8 @@ A Java-based terminal bank account management application that simulates core ba
 *   Deposit and withdraw funds with confirmation.
 *   View all accounts and transaction history in formatted tables.
 *   Multistep flows for account creation and transaction processing.
+*   Persistent storage of application data (Transactions and Account creation).
+*   Concurrent Transactions (multiple transaction execution at similar time)
 
 ***
 
