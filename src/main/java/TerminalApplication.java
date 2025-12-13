@@ -1,69 +1,33 @@
 import config.AppConfig;
-import handlers.AccountFlowHandler;
-import handlers.FileFlowHandler;
-import handlers.TestHandler;
-import handlers.TransactionFlowHandler;
-import interfaces.DataStorageService;
-import models.Account;
-import utils.ThreadErrorCollector;
-import models.Transaction;
 import services.*;
 import utils.DataSeeder;
 import utils.DisplayUtil;
-import utils.InputReader;
-import utils.id.AccountIdGenerator;
-import utils.id.TransactionIdGenerator;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 public class TerminalApplication {
-    private final DataStorageService dataStorageService;
-    private final BankingService bankingService;
-    private final TransactionExecutionService executionService;
-    private final InputReader input;
-    private final AccountFlowHandler accountFlowHandler;
-    private final TransactionFlowHandler transactionFlowHandler;
-    private final FileFlowHandler fileFlowHandler;
+    private final ApplicationContext context;
+    private final Map<Integer, Runnable> commandMap = new HashMap<>();
+    private boolean running = true;
 
-    public TerminalApplication() {
-        this.dataStorageService = new FileStorageService(
-                AppConfig.ACC_STORE_FILE_NAME,
-                AppConfig.TRANS_STORE_FILE_NAME
-        );
-        Map<String, Account> savedAccounts = loadSavedAccounts(dataStorageService);
-        Map<String, List<Transaction>> savedTransactions = loadSavedTransactions(dataStorageService);
-
-        this.bankingService = new BankingService(
-                new AccountManager(new AccountIdGenerator(), savedAccounts),
-                new TransactionManager(new TransactionIdGenerator(), savedTransactions)
-        );
-        this.executionService = new TransactionExecutionService(3, bankingService, new ThreadErrorCollector());
-        this.input = new InputReader(new Scanner(System.in));
-        this.accountFlowHandler = new AccountFlowHandler(bankingService, input);
-        this.transactionFlowHandler = new TransactionFlowHandler(bankingService, executionService, input);
-        this.fileFlowHandler = new FileFlowHandler(bankingService, dataStorageService, input);
+    public TerminalApplication(ApplicationContext context) {
+        this.context = context;
+        registerCommands();
     }
 
-    private Map<String, Account> loadSavedAccounts(DataStorageService store) {
-        try {
-            return store.loadAccounts();
-        } catch (IOException e) {
-            DisplayUtil.displayNotice(e.getMessage());
-            return new HashMap<>();
-        }
-    }
+    private void registerCommands() {
+        this.commandMap.put(1, context.accountFlowHandler::handleAccountCreationFlow);
+        this.commandMap.put(2, context.accountFlowHandler::handleAccountListingFlow);
+        this.commandMap.put(3, context.transactionFlowHandler::handleTransactionFlow);
+        this.commandMap.put(4, context.transactionFlowHandler::handleConcurrentTransactionFlow);
+        this.commandMap.put(5, context.transactionFlowHandler::handleTransactionListingFlow);
+        this.commandMap.put(6, context.fileFlowHandler::handleSavingApplicationFlow);
 
-    private Map<String, List<Transaction>> loadSavedTransactions(DataStorageService store) {
-        try {
-            return store.loadTransactions();
-        } catch (IOException e) {
-            DisplayUtil.displayNotice(e.getMessage());
-            return new HashMap<>();
-        }
+        this.commandMap.put(7, () -> {
+            context.executionService.shutdown();
+            this.running = false;
+        });
     }
 
     public void start() {
@@ -73,17 +37,20 @@ public class TerminalApplication {
         // defined within seed method
         seedData();
 
-        boolean userIsActive = true;
+        while(this.running) {
+            DisplayUtil.displayMainMenu();
 
-        while(userIsActive) {
+            int userSelection = context.input.readInt("Select an option (1-7)", 1, 7);
+            System.out.println();
+
+            Runnable command = commandMap.get(userSelection);
+            if(command == null) {
+                DisplayUtil.displayNotice("Wrong number selection");
+                continue;
+            }
+
             try {
-                DisplayUtil.displayMainMenu();
-
-                int userSelection = input.readInt("Select an option (1-7)", 1, 7);
-                System.out.println();
-
-                userIsActive = handleMenuSelection(userSelection);
-
+                command.run();
             } catch (Exception e) {
                 DisplayUtil.displayNotice(e.getMessage());
             }
@@ -91,8 +58,8 @@ public class TerminalApplication {
     }
 
     private void displayLoadMessages() {
-        int accountsCount = bankingService.viewAllAccounts().size();
-        int transactionsCount = bankingService.viewAllTransactions().size();
+        int accountsCount = context.bankingService.viewAllAccounts().size();
+        int transactionsCount = context.bankingService.viewAllTransactions().size();
 
         DisplayUtil.displayNotice(
                 accountsCount + " accounts loaded from " + AppConfig.ACC_STORE_FILE_NAME);
@@ -101,41 +68,11 @@ public class TerminalApplication {
     }
 
     public void seedData() {
-        DataSeeder seeder = new DataSeeder(bankingService);
+        DataSeeder seeder = new DataSeeder(context.bankingService);
         try {
             seeder.seed();
         } catch (Exception e) {
             DisplayUtil.displayNotice("Could Not start Application");
         }
-    }
-
-    public boolean handleMenuSelection(int userSelection) {
-        switch(userSelection) {
-            case 1:
-                accountFlowHandler.handleAccountCreationFlow();
-                break;
-            case 2:
-                accountFlowHandler.handleAccountListingFlow();
-                break;
-            case 3:
-                transactionFlowHandler.handleTransactionFlow();
-                break;
-            case 4:
-                transactionFlowHandler.handleConcurrentTransactionFlow();
-                break;
-            case 5:
-                transactionFlowHandler.handleTransactionListingFlow();
-                break;
-            case 6:
-                fileFlowHandler.handleSavingApplicationFlow();
-                break;
-            case 7:
-                executionService.shutdown();
-                return false;
-            default:
-                DisplayUtil.displayNotice("Wrong number selection");
-        }
-
-        return true;
     }
 }
