@@ -1,6 +1,5 @@
 import config.AppConfig;
 import services.*;
-import utils.DataSeeder;
 import utils.DisplayUtil;
 
 import java.util.HashMap;
@@ -33,10 +32,6 @@ public class TerminalApplication {
     public void start() {
         displayLoadMessages();
 
-        // Populate the program with already existing customer accounts
-        // defined within seed method
-        seedData();
-
         while(this.running) {
             DisplayUtil.displayMainMenu();
 
@@ -65,14 +60,5 @@ public class TerminalApplication {
                 accountsCount + " accounts loaded from " + AppConfig.ACC_STORE_FILE_NAME);
         DisplayUtil.displayNotice(
                 transactionsCount + " transactions loaded from " + AppConfig.TRANS_STORE_FILE_NAME);
-    }
-
-    public void seedData() {
-        DataSeeder seeder = new DataSeeder(context.bankingService);
-        try {
-            seeder.seed();
-        } catch (Exception e) {
-            DisplayUtil.displayNotice("Could Not start Application");
-        }
     }
 }
